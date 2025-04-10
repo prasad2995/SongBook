@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>English Songs</title>
+  <title>Telugu Songs</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
   <style>
     body {
@@ -47,46 +47,88 @@
       border-radius: 10px;
       box-shadow: 0 0 10px #ccc;
     }
-    a {
-      text-decoration: none;
-      color: #1a1a2e;
+    .song-title {
       font-weight: bold;
+      cursor: pointer;
+      color: #1a1a2e;
     }
-    a:hover {
+    .song-title:hover {
       color: #3a86ff;
+    }
+    .lyrics {
+      display: none;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      input {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>English Songs</h1>
+  <h1>Telugu Songs</h1>
   <div class="search-container">
     <input type="number" id="songNumber" placeholder="Enter Song Number" />
     <button onclick="searchSong()">Search</button>
   </div>
   <div class="song-list" id="songList"></div>
 
-<!-- same styling and structure -->
-<script>
-  fetch('songs.json')
-    .then(response => response.json())
-    .then(data => {
+  <script>
+    let songData = [];
+    fetch('songs.json')
+      .then(response => response.json())
+      .then(data => {
+        songData = data;
+        renderSongs(data);
+      });
+
+    function renderSongs(data) {
       const container = document.getElementById('songList');
+      container.innerHTML = '';
       data.forEach(song => {
-        if (song.Tel_Song_Name) {
+        if (song["Tel_Song_Name"]) {
           const div = document.createElement('div');
           div.className = 'song';
-          div.innerHTML = `<a href="telugu-${song.Number}.html">${song.Number}. ${song.Tel_Song_Name.split('\\n')[0]}</a>`;
+          const lyrics = song["Tel_Song_Name"].replace(/\\n/g, '<br/>');
+          div.innerHTML = `
+            <div class="song-title" onclick="toggleLyrics(this)">
+              ${song.Number}. ${song["Tel_Song_Name"].split('\\n')[0]}
+            </div>
+            <div class="lyrics">${lyrics}</div>`;
           container.appendChild(div);
         }
       });
-    });
-
-  function searchSong() {
-    const num = document.getElementById('songNumber').value;
-    if (num) {
-      window.location.href = 'telugu-' + num + '.html';
     }
-  }
-</script>
+
+    function toggleLyrics(titleElem) {
+      const lyricsElem = titleElem.nextElementSibling;
+      lyricsElem.style.display = lyricsElem.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function searchSong() {
+      const num = parseInt(document.getElementById('songNumber').value);
+      if (!isNaN(num)) {
+        const song = songData.find(s => s.Number == num && s["Tel_Song_Name"]);
+        if (song) {
+          const container = document.getElementById('songList');
+          container.innerHTML = '';
+          const div = document.createElement('div');
+          div.className = 'song';
+          const lyrics = song["Tel_Song_Name"].replace(/\\n/g, '<br/>');
+          div.innerHTML = `
+            <div class="song-title" onclick="toggleLyrics(this)">
+              ${song.Number}. ${song["Tel_Song_Name"].split('\\n')[0]}
+            </div>
+            <div class="lyrics" style="display:block">${lyrics}</div>`;
+          container.appendChild(div);
+        }
+      }
+    }
+  </script>
 </body>
 </html>
