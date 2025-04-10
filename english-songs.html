@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>English Songs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #1a1a2e;
+    }
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .song-list {
+      max-width: 700px;
+      margin: auto;
+    }
+    .song {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .song-title {
+      font-weight: bold;
+      cursor: pointer;
+      color: #1a1a2e;
+    }
+    .song-title:hover {
+      color: #3a86ff;
+    }
+    .lyrics {
+      display: none;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>English Songs</h1>
+  <div class="search-container">
+    <input type="number" id="songNumber" placeholder="Enter Song Number" />
+    <button onclick="searchSong()">Search</button>
+  </div>
+  <div class="song-list" id="songList"></div>
+
+  <script>
+    let songData = [];
+    fetch('songs.json')
+      .then(response => response.json())
+      .then(data => {
+        songData = data;
+        renderSongs(data);
+      });
+
+    function renderSongs(data) {
+      const container = document.getElementById('songList');
+      container.innerHTML = '';
+      data.forEach(song => {
+        if (song["Eng_Song_Name"]) {
+          const div = document.createElement('div');
+          div.className = 'song';
+          const lyrics = song["Eng_Song_Name"].replace(/\\n/g, '<br/>');
+          div.innerHTML = `
+            <div class="song-title" onclick="toggleLyrics(this)">
+              ${song.Number}. ${song["Eng_Song_Name"].split('\\n')[0]}
+            </div>
+            <div class="lyrics">${lyrics}</div>`;
+          container.appendChild(div);
+        }
+      });
+    }
+
+    function toggleLyrics(titleElem) {
+      const lyricsElem = titleElem.nextElementSibling;
+      lyricsElem.style.display = lyricsElem.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function searchSong() {
+      const num = parseInt(document.getElementById('songNumber').value);
+      if (!isNaN(num)) {
+        const song = songData.find(s => s.Number == num && s["Eng_Song_Name"]);
+        if (song) {
+          const container = document.getElementById('songList');
+          container.innerHTML = '';
+          const div = document.createElement('div');
+          div.className = 'song';
+          const lyrics = song["Eng_Song_Name"].replace(/\\n/g, '<br/>');
+          div.innerHTML = `
+            <div class="song-title" onclick="toggleLyrics(this)">
+              ${song.Number}. ${song["Eng_Song_Name"].split('\\n')[0]}
+            </div>
+            <div class="lyrics" style="display:block">${lyrics}</div>`;
+          container.appendChild(div);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

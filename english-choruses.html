@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>English Songs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #1a1a2e;
+    }
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .song-list {
+      max-width: 700px;
+      margin: auto;
+    }
+    .song {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    a {
+      text-decoration: none;
+      color: #1a1a2e;
+      font-weight: bold;
+    }
+    a:hover {
+      color: #3a86ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>English Songs</h1>
+  <div class="search-container">
+    <input type="number" id="songNumber" placeholder="Enter Song Number" />
+    <button onclick="searchSong()">Search</button>
+  </div>
+  <div class="song-list" id="songList"></div>
+
+  <script>
+<!-- same styling as english-songs.html -->
+<script>
+  fetch('songs.json')
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('songList');
+      data.forEach(song => {
+        if (song.Eng_Chrous_Name) {
+          const div = document.createElement('div');
+          div.className = 'song';
+          div.innerHTML = `<a href="chorus-${song.Number}.html">${song.Number}. ${song.Eng_Chrous_Name.split('\\n')[0]}</a>`;
+          container.appendChild(div);
+        }
+      });
+    });
+
+  function searchSong() {
+    const num = document.getElementById('songNumber').value;
+    if (num) {
+      window.location.href = 'chorus-' + num + '.html';
+    }
+  }
+</script>
+
+</body>
+</html>
