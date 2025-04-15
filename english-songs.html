@@ -79,56 +79,45 @@
   <div class="song-list" id="songList"></div>
 
   <script>
-    let songData = [];
-    fetch('songs.json')
-      .then(response => response.json())
-      .then(data => {
-        songData = data;
-        renderSongs(data);
-      });
+let indexSongs = [];
+let fullSongs = [];
 
-    function renderSongs(data) {
-      const container = document.getElementById('songList');
-      container.innerHTML = '';
-      data.forEach(song => {
-        if (song["Eng_Song_Name"]) {
-          const div = document.createElement('div');
-          div.className = 'song';
-          const lyrics = song["Eng_Song_Name"].replace(/\\n/g, '<br/>');
-          div.innerHTML = `
-            <div class="song-title" onclick="toggleLyrics(this)">
-              ${song.Number}. ${song["Eng_Song_Name"].split('\\n')[0]}
-            </div>
-            <div class="lyrics">${lyrics}</div>`;
-          container.appendChild(div);
-        }
-      });
-    }
+// Load both JSON files
+Promise.all([
+  fetch("Index.json").then(res => res.json()),
+  fetch("SongBook.json").then(res => res.json())
+]).then(([indexData, fullData]) => {
+  indexSongs = indexData;
+  fullSongs = fullData;
+  renderIndexList();
+});
 
-    function toggleLyrics(titleElem) {
-      const lyricsElem = titleElem.nextElementSibling;
-      lyricsElem.style.display = lyricsElem.style.display === 'block' ? 'none' : 'block';
-    }
+function renderIndexList() {
+  const listContainer = document.getElementById("song-list");
+  listContainer.innerHTML = "";
 
-    function searchSong() {
-      const num = parseInt(document.getElementById('songNumber').value);
-      if (!isNaN(num)) {
-        const song = songData.find(s => s.Number == num && s["Eng_Song_Name"]);
-        if (song) {
-          const container = document.getElementById('songList');
-          container.innerHTML = '';
-          const div = document.createElement('div');
-          div.className = 'song';
-          const lyrics = song["Eng_Song_Name"].replace(/\\n/g, '<br/>');
-          div.innerHTML = `
-            <div class="song-title" onclick="toggleLyrics(this)">
-              ${song.Number}. ${song["Eng_Song_Name"].split('\\n')[0]}
-            </div>
-            <div class="lyrics" style="display:block">${lyrics}</div>`;
-          container.appendChild(div);
-        }
-      }
-    }
-  </script>
+  indexSongs.forEach(song => {
+    const songItem = document.createElement("div");
+    songItem.className = "song-item";
+    songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Eng_Song_Name}`;
+    songItem.addEventListener("click", () => showFullSong(song.Number));
+    listContainer.appendChild(songItem);
+  });
+}
+
+function showFullSong(songNumber) {
+  const song = fullSongs.find(s => s.Number === songNumber);
+  const displayArea = document.getElementById("song-display");
+
+  if (song) {
+    displayArea.innerHTML = `
+      <h2>${song.Number}. ${song.Eng_Song_Name}</h2>
+      <pre>${song.Eng_Song_Name}</pre>
+    `;
+  } else {
+    displayArea.innerHTML = "<p>Lyrics not found.</p>";
+  }
+}
+</script>
 </body>
 </html>
