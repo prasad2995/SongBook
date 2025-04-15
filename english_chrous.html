@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Song Lyrics</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdfaf6;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      word-wrap: break-word;
+    }
+    h2 {
+      color: #444;
+    }
+    pre {
+      white-space: pre-wrap;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      pre {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="song-title"></h2>
+    <pre id="lyrics"></pre>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const songNumber = parseInt(urlParams.get("number"), 10);
+
+    fetch("SongBook.json")
+      .then(res => res.json())
+      .then(data => {
+        const song = data.find(s => s.Number === songNumber);
+        if (song) {
+          document.getElementById("lyrics").textContent = song.Eng_Chrous_Name;
+        } else {
+          document.getElementById("song-title").textContent = "Song Not Found";
+        }
+      });
+  </script>
+</body>
+</html>
