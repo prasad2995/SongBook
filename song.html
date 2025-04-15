@@ -55,7 +55,6 @@
       .then(data => {
         const song = data.find(s => s.Number === songNumber);
         if (song) {
-          document.getElementById("song-title").textContent = `${song.Number}. ${song.Eng_Song_Name}`;
           document.getElementById("lyrics").textContent = song.Eng_Song_Name;
         } else {
           document.getElementById("song-title").textContent = "Song Not Found";
