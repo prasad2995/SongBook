@@ -2,131 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>English Choruses</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>English Songs</title>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
       padding: 20px;
     }
     h1 {
       text-align: center;
-      color: #1a1a2e;
+      color: #333;
     }
-    .search-container {
-      text-align: center;
+    #search-container {
+      display: flex;
+      justify-content: center;
       margin-bottom: 20px;
     }
-    input {
+    input[type="number"] {
       padding: 10px;
       font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #333;
-      width: 200px;
+      width: 120px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
     }
     button {
-      padding: 10px 20px;
-      background-color: #1a1a2e;
+      padding: 10px 15px;
+      font-size: 16px;
+      margin-left: 10px;
+      background-color: #28a745;
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 8px;
       cursor: pointer;
     }
-    .song-list {
-      max-width: 700px;
-      margin: auto;
-    }
-    .song {
-      background: white;
-      padding: 15px;
-      margin: 10px 0;
+    .song-item {
+      background: #fff;
       border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
-    }
-    .song-title {
-      font-weight: bold;
+      padding: 10px 15px;
+      margin: 10px auto;
+      max-width: 600px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       cursor: pointer;
-      color: #1a1a2e;
     }
-    .song-title:hover {
-      color: #3a86ff;
-    }
-    .lyrics {
-      display: none;
-      margin-top: 10px;
-      white-space: pre-wrap;
-    }
-    @media screen and (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-      input {
-        width: 100%;
-      }
+    .song-item:hover {
+      background: #e6f7ff;
     }
   </style>
 </head>
 <body>
-  <h1>English Choruses</h1>
-  <div class="search-container">
-    <input type="number" id="songNumber" placeholder="Enter Song Number" />
+  <h1>English Songs</h1>
+
+  <div id="search-container">
+    <input type="number" id="song-number-input" placeholder="Enter number" />
     <button onclick="searchSong()">Search</button>
   </div>
-  <div class="song-list" id="songList"></div>
+
+  <div id="song-list"></div>
 
   <script>
-    let songData = [];
-    fetch('songs.json')
-      .then(response => response.json())
+    let indexSongs = [];
+
+    fetch("Index.json")
+      .then(res => res.json())
       .then(data => {
-        songData = data;
-        renderSongs(data);
+        indexSongs = data;
+        renderIndexList();
       });
 
-    function renderSongs(data) {
-      const container = document.getElementById('songList');
-      container.innerHTML = '';
-      data.forEach(song => {
-        if (song["Eng_Chrous_Name"]) {
-          const div = document.createElement('div');
-          div.className = 'song';
-          const lyrics = song["Eng_Chrous_Name"].replace(/\\n/g, '<br/>');
-          div.innerHTML = `
-            <div class="song-title" onclick="toggleLyrics(this)">
-              ${song.Number}. ${song["Eng_Chrous_Name"].split('\\n')[0]}
-            </div>
-            <div class="lyrics">${lyrics}</div>`;
-          container.appendChild(div);
-        }
+    function renderIndexList() {
+      const listContainer = document.getElementById("song-list");
+      indexSongs.forEach(song => {
+        const songItem = document.createElement("div");
+        songItem.className = "song-item";
+        songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Eng_Chrous_Name}`;
+        songItem.onclick = () => {
+          window.location.href = `song.html?number=${song.Number}`;
+        };
+        listContainer.appendChild(songItem);
       });
-    }
-
-    function toggleLyrics(titleElem) {
-      const lyricsElem = titleElem.nextElementSibling;
-      lyricsElem.style.display = lyricsElem.style.display === 'block' ? 'none' : 'block';
     }
 
     function searchSong() {
-      const num = parseInt(document.getElementById('songNumber').value);
-      if (!isNaN(num)) {
-        const song = songData.find(s => s.Number == num && s["Eng_Chrous_Name"]);
-        if (song) {
-          const container = document.getElementById('songList');
-          container.innerHTML = '';
-          const div = document.createElement('div');
-          div.className = 'song';
-          const lyrics = song["Eng_Chrous_Name"].replace(/\\n/g, '<br/>');
-          div.innerHTML = `
-            <div class="song-title" onclick="toggleLyrics(this)">
-              ${song.Number}. ${song["Eng_Chrous_Name"].split('\\n')[0]}
-            </div>
-            <div class="lyrics" style="display:block">${lyrics}</div>`;
-          container.appendChild(div);
-        }
+      const input = document.getElementById("song-number-input").value;
+      if (input) {
+        window.location.href = `song.html?number=${input}`;
       }
     }
   </script>
