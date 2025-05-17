@@ -76,8 +76,8 @@
         const songItem = document.createElement("div");
         songItem.className = "song-item";
         songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Eng_Chrous_Name}`;
-        songItem.onclick = () => {
-          window.location.href = `english_chrous.html?number=${song.Number}`;
+		songItem.onclick = () => {
+		window.location.href = `english_chrous.html?number=${song.Number}`;
         };
         listContainer.appendChild(songItem);
       });

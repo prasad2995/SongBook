@@ -76,8 +76,8 @@
         const songItem = document.createElement("div");
         songItem.className = "song-item";
         songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Eng_Song_Name}`;
-        songItem.onclick = () => {
-          window.location.href = `song.html?number=${song.Number}`;
+		songItem.onclick = () => {
+         window.location.href = `english_song.html?number=${song.Number}`;
         };
         listContainer.appendChild(songItem);
       });
@@ -86,7 +86,7 @@
     function searchSong() {
       const input = document.getElementById("song-number-input").value;
       if (input) {
-        window.location.href = `song.html?number=${input}`;
+        window.location.href = `english_song.html?number=${input}`;
       }
     }
   </script>
