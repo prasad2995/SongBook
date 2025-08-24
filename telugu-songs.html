@@ -48,17 +48,46 @@
     .song-item:hover {
       background: #e6f7ff;
     }
+	
+	.search-box {
+		text-align: center;
+		margin: 20px;
+	}
+	.search-box input {
+		padding: 8px;
+		width: 60%;
+		max-width: 300px;
+		border-radius: 6px;
+		border: 1px solid #ccc;
+	}
+	.search-box button {
+		padding: 8px 15px;
+		margin-left: 5px;
+		background: #003049;
+		color: white;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+	}
+	.song-result {
+		background: #ffffffaa;
+		margin: 15px auto;
+		padding: 15px;
+		border-radius: 10px;
+		max-width: 600px;
+		text-align: left;
+	}
   </style>
 </head>
 <body>
   <h1>Telugu Songs</h1>
 
-  <div id="search-container">
-    <input type="number" id="song-number-input" placeholder="Enter number" />
-    <button onclick="searchSong()">Search</button>
-  </div>
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="Enter song number or text...">
+  <button onclick="searchSongs()">Search</button>
+</div>
 
-  <div id="song-list"></div>
+<div id="results"></div>
 
   <script>
     let indexSongs = [];
@@ -83,12 +112,42 @@
       });
     }
 
-    function searchSong() {
-      const input = document.getElementById("song-number-input").value;
-      if (input) {
-        window.location.href = `telugu_song.html?number=${input}`;
-      }
+   function searchSongs() {
+    const input = document.getElementById("searchInput").value.trim();
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
+
+    if (input === "") {
+      resultsDiv.innerHTML = "<p>దయచేసి పాట నంబరు లేదా పదం ఇవ్వండి</p>";
+      return;
     }
+
+    let results = [];
+
+    // If input is a number, search by number
+    if (!isNaN(input)) {
+      results = indexSongs.filter(song => song.number === parseInt(input));
+    } else {
+      // Otherwise search Telugu text inside title/lyrics
+      results = indexSongs.filter(song =>
+        song.title.includes(input) || song.lyrics.includes(input)
+      );
+    }
+
+    if (results.length === 0) {
+      resultsDiv.innerHTML = "<p>ఫలితాలు లేవు</p>";
+    } else {
+      results.forEach(song => {
+        const songDiv = document.createElement("div");
+        songDiv.classList.add("song-result");
+        songDiv.innerHTML = `
+          <h3>${song.number}. ${song.title}</h3>
+          <p>${song.lyrics}</p>
+        `;
+        resultsDiv.appendChild(songDiv);
+      });
+    }
+  }
   </script>
 </body>
 </html>
