@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>English Chrouses</title>
+  <title>Telugu Songs</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -51,7 +51,7 @@
   </style>
 </head>
 <body>
-  <h1>English Chrouses</h1>
+  <h1>Telugu Songs</h1>
 
   <div id="search-container">
     <input type="number" id="song-number-input" placeholder="Enter number" />
@@ -75,9 +75,9 @@
       indexSongs.forEach(song => {
         const songItem = document.createElement("div");
         songItem.className = "song-item";
-        songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Eng_Chrous_Name}`;
-		songItem.onclick = () => {
-		window.location.href = `english_chrous.html?number=${song.Number}`;
+        songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Tel_Song_Name}`;
+        songItem.onclick = () => {
+          window.location.href = `telugu_song.html?number=${song.Number}`;
         };
         listContainer.appendChild(songItem);
       });
@@ -86,7 +86,7 @@
     function searchSong() {
       const input = document.getElementById("song-number-input").value;
       if (input) {
-        window.location.href = `english_chrous.html?number=${input}`;
+        window.location.href = `telugu_song.html?number=${input}`;
       }
     }
   </script>
