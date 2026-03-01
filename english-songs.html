@@ -3,185 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>English Songs | Song Book</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>English Songs</title>
   <style>
-    :root {
-      --primary: #003049;
-      --accent: #d62828;
-      --bg: #f8f9fa;
-      --glass: rgba(255, 255, 255, 0.9);
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
-      background-attachment: fixed;
-      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
       padding: 20px;
-      color: var(--primary);
     }
-
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
     h1 {
       text-align: center;
-      font-weight: 600;
-      letter-spacing: -1px;
-      margin-bottom: 30px;
-      text-transform: uppercase;
-      font-size: 1.8rem;
+      color: #333;
     }
-
-    /* Elegant Search Box */
-    .search-wrapper {
-      position: sticky;
-      top: 10px;
-      z-index: 100;
-      margin-bottom: 30px;
-    }
-
-    #song-search {
-      width: 100%;
-      padding: 15px 25px;
-      font-size: 16px;
-      border: none;
-      border-radius: 50px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      outline: none;
-      box-sizing: border-box;
-      transition: all 0.3s ease;
-      background: var(--glass);
-      backdrop-filter: blur(5px);
-    }
-
-    #song-search:focus {
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
-    }
-
-    /* Song Card Styling */
-    .song-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .song-item {
-      background: var(--glass);
-      padding: 18px 25px;
-      border-radius: 15px;
+    #search-container {
       display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid rgba(255,255,255,0.3);
-      backdrop-filter: blur(10px);
-    }
-
-    .song-item:hover {
-      transform: scale(1.02);
-      background: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .song-number {
-      background: var(--primary);
-      color: white;
-      width: 35px;
-      height: 35px;
-      display: flex;
-      align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
+    }
+    input[type="number"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 120px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin-left: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .song-item {
+      background: #fff;
       border-radius: 10px;
-      margin-right: 15px;
-      font-size: 0.9em;
-      font-weight: 600;
+      padding: 10px 15px;
+      margin: 10px auto;
+      max-width: 600px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
     }
-
-    .song-title {
-      font-weight: 400;
-      font-size: 1.1em;
-    }
-
-    /* Empty state */
-    #no-results {
-      text-align: center;
-      padding: 40px;
-      display: none;
-      color: #666;
+    .song-item:hover {
+      background: #e6f7ff;
     }
   </style>
 </head>
 <body>
-
-<div class="container">
-  <a href="index.html" style="text-decoration: none; color: var(--primary); font-size: 0.9rem;">← Back Home</a>
   <h1>English Songs</h1>
 
-  <div class="search-wrapper">
-    <input type="text" id="song-search" placeholder="Search by name or song number..." onkeyup="filterSongs()">
+  <div id="search-container">
+    <input type="number" id="song-number-input" placeholder="Enter number" />
+    <button onclick="searchSong()">Search</button>
   </div>
 
-  <div id="song-list" class="song-list">
-    </div>
+  <div id="song-list"></div>
 
-  <div id="no-results">No songs found. Try a different search!</div>
-</div>
+  <script>
+    let indexSongs = [];
 
-<script>
-  let allSongs = [];
+    fetch("Index.json")
+      .then(res => res.json())
+      .then(data => {
+        indexSongs = data;
+        renderIndexList();
+      });
 
-  // Fetch data
-  fetch("Index.json")
-    .then(res => res.json())
-    .then(data => {
-      allSongs = data;
-      renderList(allSongs);
-    });
-
-  function renderList(songs) {
-    const listContainer = document.getElementById("song-list");
-    const noResults = document.getElementById("no-results");
-    
-    listContainer.innerHTML = "";
-    
-    if (songs.length === 0) {
-      noResults.style.display = "block";
-      return;
-    } else {
-      noResults.style.display = "none";
+    function renderIndexList() {
+      const listContainer = document.getElementById("song-list");
+      indexSongs.forEach(song => {
+        const songItem = document.createElement("div");
+        songItem.className = "song-item";
+        songItem.innerHTML = `<strong>${song.Number}.</strong> ${song.Eng_Song_Name}`;
+		songItem.onclick = () => {
+         window.location.href = `english_song.html?number=${song.Number}`;
+        };
+        listContainer.appendChild(songItem);
+      });
     }
 
-    songs.forEach(song => {
-      const songItem = document.createElement("div");
-      songItem.className = "song-item";
-      songItem.innerHTML = `
-        <div class="song-number">${song.Number}</div>
-        <div class="song-title">${song.Eng_Song_Name}</div>
-      `;
-      songItem.onclick = () => {
-        window.location.href = `english_song.html?number=${song.Number}`;
-      };
-      listContainer.appendChild(songItem);
-    });
-  }
-
-  function filterSongs() {
-    const searchTerm = document.getElementById("song-search").value.toLowerCase();
-    
-    const filtered = allSongs.filter(song => {
-      return (
-        song.Eng_Song_Name.toLowerCase().includes(searchTerm) || 
-        song.Number.toString().includes(searchTerm)
-      );
-    });
-    
-    renderList(filtered);
-  }
-</script>
-
+    function searchSong() {
+      const input = document.getElementById("song-number-input").value;
+      if (input) {
+        window.location.href = `english_song.html?number=${input}`;
+      }
+    }
+  </script>
 </body>
 </html>
