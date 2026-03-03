@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Song Book</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      color: #003049;
+    }
+    .nav {
+      background-color: #003049;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    .nav h1 {
+      color: white;
+      margin: 0;
+    }
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .menu {
+      display: none;
+      flex-direction: column;
+      background: #003049;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+    }
+    .menu a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-top: 1px solid #ffffff33;
+    }
+    .menu a:hover {
+      background-color: #005f73;
+    }
+    .show {
+      display: flex;
+    }
+    .main {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .main h2 {
+      font-size: 2em;
+    }
+    @media (min-width: 768px) {
+      .menu {
+        position: static;
+        flex-direction: row;
+        display: flex;
+        justify-content: center;
+      }
+      .menu a {
+        border: none;
+        padding: 10px 20px;
+      }
+      .menu-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <h1>🎵 Song Book</h1>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="menu" id="navMenu">
+      <a href="english-songs.html">English Songs</a>
+      <a href="english-choruses.html">English Choruses</a>
+      <a href="telugu-songs.html">Telugu Songs</a>
+    </div>
+  </div>
+  <div class="main">
+    <h2>Welcome to the Song Book</h2>
+    <p>Browse your favorite songs and choruses in English and Telugu.</p>
+  </div>
+  <script>
+    function toggleMenu() {
+      document.getElementById('navMenu').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>
