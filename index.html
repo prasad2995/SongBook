@@ -270,10 +270,47 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById('page-'+id).classList.add('active');
 }
-function goHome(){
+
+function pushNav(state){
+  history.pushState(state,'');
+}
+
+function restoreState(state){
+  if(!state||state.page==='home'){
+    _showHome(); return;
+  }
+  if(state.page==='list'){
+    curType=state.type||'es';
+    document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset&&b.dataset.t===curType);});
+    document.getElementById('list-label').textContent=SECTIONS[curType].label;
+    var inp=document.getElementById('srch');
+    inp.placeholder=SECTIONS[curType].ph;
+    inp.value=state.q||'';
+    document.getElementById('srch-clear').classList.toggle('show',(state.q||'').length>0);
+    renderList(state.q||'');
+    showPage('list');
+    window.scrollTo(0,0);
+    return;
+  }
+  if(state.page==='detail'){
+    curType=state.type||'es';
+    renderList(state.q||'');
+    openSongInner(state.num,false);
+    return;
+  }
+}
+
+window.addEventListener('popstate',function(e){ restoreState(e.state); });
+history.replaceState({page:'home'},'');
+
+function _showHome(){
   showPage('home');
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   window.scrollTo(0,0);
+}
+function goHome(){
+  pushNav({page:'home'});
+  _showHome();
 }
 function openSection(type){
   curType=type;
@@ -284,15 +321,12 @@ function openSection(type){
   inp.value='';
   document.getElementById('srch-clear').classList.remove('show');
   renderList('');
+  pushNav({page:'list',type:type,q:''});
   showPage('list');
   window.scrollTo(0,0);
 }
 function backToList(){
-  showPage('list');
-  setTimeout(function(){
-    var row=document.querySelector('[data-n="'+curNum+'"]');
-    if(row) row.scrollIntoView({block:'center',behavior:'smooth'});
-  },60);
+  history.back();
 }
 
 // Search
@@ -300,11 +334,14 @@ function onSearch(){
   var q=document.getElementById('srch').value;
   document.getElementById('srch-clear').classList.toggle('show',q.length>0);
   renderList(q.trim());
+  // update current history entry (replace, not push) so back still goes to list
+  history.replaceState({page:'list',type:curType,q:q.trim()},'');
 }
 function clearSearch(){
   document.getElementById('srch').value='';
   document.getElementById('srch-clear').classList.remove('show');
   renderList('');
+  history.replaceState({page:'list',type:curType,q:''},'');
   document.getElementById('srch').focus();
 }
 
@@ -368,21 +405,20 @@ function renderList(q){
 }
 
 // Open song detail
-function openSong(num){
+// openSongInner: just renders, no history push (used by popstate restore)
+function openSongInner(num, push){
   curNum=num;
   var song=songs.find(function(s){return s.n===num;});
   if(!song) return;
 
   document.getElementById('det-badge').textContent='Song '+num;
 
-  // Available tabs
   var tabs=[
     {key:'es',label:'🎵 English Song'},
     {key:'ec',label:'🎶 Chorus'},
     {key:'ts',label:'🙏 Telugu'},
   ].filter(function(t){return song[t.key]&&song[t.key].trim();});
 
-  // Choose default tab: prefer current section
   var sectionTab={es:'es',ec:'ec',ts:'ts'}[curType]||'es';
   curTab=(song[sectionTab]&&song[sectionTab].trim())?sectionTab:(tabs[0]?tabs[0].key:'es');
 
@@ -397,7 +433,6 @@ function openSong(num){
     document.getElementById('det-title').textContent=firstLine||('Song '+num);
   }
 
-  // Build tab buttons
   document.getElementById('tab-row').innerHTML=tabs.map(function(t){
     return '<button class="tab-btn'+(t.key===curTab?' active':'')+'" data-k="'+t.key+'" onclick="switchTab(\''+t.key+'\')">'+t.label+'</button>';
   }).join('');
@@ -405,11 +440,11 @@ function openSong(num){
   window.switchTab=renderTab;
   renderTab(curTab);
 
-  // Prev / Next
   var idx=filteredNums.indexOf(num);
   var prev=idx>0?filteredNums[idx-1]:null;
   var next=idx<filteredNums.length-1?filteredNums[idx+1]:null;
   var sec=SECTIONS[curType];
+  var curQ=document.getElementById('srch').value.trim();
 
   function navBtn(n,dir){
     if(!n) return '<div></div>';
@@ -423,9 +458,14 @@ function openSong(num){
   }
   document.getElementById('song-nav').innerHTML=navBtn(prev,'prev')+navBtn(next,'next');
 
+  if(push!==false){
+    pushNav({page:'detail',type:curType,num:num,q:curQ});
+  }
   showPage('detail');
   window.scrollTo(0,0);
 }
+// openSong: public entry point — always pushes history
+function openSong(num){ openSongInner(num,true); }
 
 // Expose for Firebase callback
 window.songs=songs;
